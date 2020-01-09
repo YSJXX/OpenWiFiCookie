@@ -67,12 +67,11 @@ string domain_check(string host)
 
 string data(string http,string::size_type it)
 {
-
     string result;
     result.clear();
     if (it != string::npos){ //찾았다면.
         string str2 = http.substr(it);      //cookie or host string extraction
-        result=http.substr(it,str2.find("\n"));      //cookie or host ~ \n
+        result=http.substr(it,str2.find("\n")-1);      //cookie or host ~ \n
         result=result.substr(result.find_first_of(":")+2);
         return result;
     }

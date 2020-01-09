@@ -195,7 +195,7 @@ void sqlite(int id)
                     err = cookie_value.substr(cookie_value.length()-1);     //맨뒤로 이동
                     if(err == " ")
                         cookie_value=cookie_value.substr(0,cookie_value.length()-1);
-                    else if(err == "0d0a")
+                    else if(err == "\n")
                         cookie_value=cookie_value.substr(0,cookie_value.length()-1);
                     else
                         break;
