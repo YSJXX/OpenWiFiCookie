@@ -27,7 +27,8 @@ using namespace std;
 
 
 static map<string,struct map_value>m;
-static map<string,string>reassem_map;
+//static map<string,string>reassem_map;
+static map<string,struct map_value>reassem_map;
 static set<string>sld;
 static mutex mutx;
 
@@ -59,7 +60,7 @@ string domain_check(string host)
             }
         }
     }
-    sleep(1);
+//    sleep(1);
     return dase_domain;
 }
 
@@ -96,58 +97,77 @@ string make_key(struct iphdr * ip_header,struct tcphdr * tcp_header)
     return key;
 }
 
-void tcp_reassembly(const u_char *http,struct iphdr * ip_header, struct tcphdr * tcp_header,unsigned int http_len)
+void tcp_reassembly(const u_char *http,struct iphdr * ip_header, struct tcphdr * tcp_header,unsigned int tcp_segment)
 {
+    struct map_value * http_value = new struct map_value;
     string key;
-    string http_data;
+    //    string http_data;
     key = make_key(ip_header,tcp_header);
 
-    for(unsigned int i=0;i<http_len;i++)
-        http_data+=static_cast<char>(http[i]);
+    for(unsigned int i=0;i<tcp_segment;i++)
+        http_value->http_data+=static_cast<char>(http[i]);
 
-    map<string,string>::iterator it;
+    map<string,struct map_value>::iterator it;
+    //next_seq = tcp_header->seq+tcp_segment;
     it = reassem_map.find(key);
-    if(http_len!=0)                 //tcp_segment 존재
+    if(tcp_segment!=0)                                                   //tcp_segment 존재
     {
-        if(it != reassem_map.end())     //Key가 있으면 붙이기
+        if(it != reassem_map.end())                                      //Key가 있으면 붙이기
         {
-            it->second.append(http_data);
+            if(ntohl(tcp_header->seq) == it->second.next_seq){          //현재 패킷의 sequence가 이전에 저장해둔 sequence 값이랑 같으면 reassemble
+                it->second.http_data.append(http_value->http_data);
+                it->second.next_seq=ntohl(tcp_header->seq)+tcp_segment;
+            }
+            else{
+//                system("clear");
+//                cout<<"키는 있고 reassemble 이 끝났는데 또 패킷이 오면 key 뒤에 a를 붙여주기. 기존 패킷과 섞이지 않기위해.\n";    //키는 있고 reassemble 이 끝났는데 또 패킷이 오면 key 뒤에 a를 붙여주기. 기존 패킷과 섞이지 않기위해.
+//                sleep(3);
+            }
         }
-        else if(it == reassem_map.end())    //Key 가 없으면 map에 추가하기.
+        else if(it == reassem_map.end())                                    //Key 가 없으면 map에 추가하기.
         {
-            reassem_map.insert(make_pair(key,http_data));
+            if(!it->second.reassem_finish){
+                http_value->next_seq=ntohl(tcp_header->seq)+tcp_segment;       //next_sequence number
+                reassem_map.insert(make_pair(key,*http_value));
+            }
         }
     }
-    else if(it != reassem_map.end() && http_len == 0)   //Key는 있는데 데이터가 없다 .. 그러면 reassembly가 끝났다는 것.
+    else if((it != reassem_map.end()) && (tcp_segment == 0))                 //Key는 있는데 데이터가 없다 .. 그러면 reassembly가 끝났다는 것.
     {
-        string::size_type cookie_it,host_it;
-        static struct map_value * value= new struct map_value;
+        if(ntohl(tcp_header->seq) == it->second.next_seq)
+        {
+            it->second.reassem_finish=true;     //reassemble finish
 
-        cookie_it=it->second.find("Cookie:");        //cookie의 위치
-        host_it=it->second.find("Host:");            //Host의 위치
+            string::size_type cookie_it,host_it;
+            static struct map_value * value= new struct map_value;
 
-        string cookie=data(it->second,cookie_it);
-        string host=data(it->second,host_it);
+            cookie_it=it->second.http_data.find("Cookie:");                   //cookie의 위치
+            host_it=it->second.http_data.find("Host:");                       //Host의 위치
+            if(cookie_it == string::npos|| host_it == string::npos) return;
 
-        if(cookie != "0"){
+            string host=data(it->second.http_data,host_it);
+            string cookie=data(it->second.http_data,cookie_it);
+
+
             char src_buf[16];
             inet_ntop(AF_INET,&ip_header->saddr,src_buf,sizeof(src_buf));
 
             mutx.lock();
             auto iter =m.find(key);
-            if(iter == m.end()){
+            if(iter == m.end() && (it->second.reassem_finish)){
                 value->host=host;
                 value->cookie=cookie;
-//                string dase_domain = domain_check(host);
                 value->base_domain=domain_check(host);
-                m[key]=*value;
-            }else{
-                iter->second.host.append(host);
-                iter->second.cookie.append(cookie);
+                m.insert(make_pair(key,*value));
             }
             mutx.unlock();
-
-//            string dase_domain = domain_check(host);
+        }
+        else if(it->second.next_seq==static_cast<unsigned int>(NULL))
+        {
+            // Key는 있는데 데이터,next_sequence number 도 없으면 reassemble 과정에서 문제가 있는걸까
+//            system("clear");
+//            cout<<"Key는 있는데 데이터,next_sequence number 도 없으면 reassemble 과정에서 문제가 있는걸까 \n";
+//            sleep(3);
 
         }
     }
@@ -157,8 +177,8 @@ void mythread::run()
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
-//    handle = pcap_open_live("wlan0",BUFSIZ,1,100,errbuf);
-    handle = pcap_open_offline("/root/Desktop/Project/naver_packet.pcap",errbuf);
+    handle = pcap_open_live("wlan0",BUFSIZ,1,100,errbuf);
+//    handle = pcap_open_offline("/root/Desktop/Project/naver_packet.pcap",errbuf);
 
     sld.insert(".kr");
     sld.insert(".com");

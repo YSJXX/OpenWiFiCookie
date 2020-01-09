@@ -63,6 +63,9 @@ struct map_value
     std::string host;
     std::string cookie;
     std::string base_domain;
+    std::string http_data;
+    uint32_t next_seq;
+    bool reassem_finish;
 };
 
 struct qmap

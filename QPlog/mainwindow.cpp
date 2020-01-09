@@ -121,6 +121,25 @@ void sql_exec(sqlite3 *db,char *zErrMsg,char *sql,string str_sql)
         fprintf(stdout,"Successfull\n");
     }
 }
+
+string erase_space(std::string str)
+{
+    char *str_buff = static_cast<char*>(malloc(1024));
+    strcpy(str_buff,str.c_str());
+    string data;
+//    cout<<str_buff<<'\n';
+    char *tok= strtok(str_buff," \r\n");
+    while(true){
+        string str1(tok);
+        if(tok!=nullptr)
+        {
+            data = str1;
+            break;
+        }
+        tok=strtok(nullptr," \r\n");
+    }
+    return data;
+}
 void sqlite(int id)
 {
     sqlite3 *db;
@@ -153,6 +172,9 @@ void sqlite(int id)
         string cookie_name;
         string cookie_value;
 
+        host = erase_space(host);
+        base_Domain = erase_space(base_Domain);
+
         char *str_buff = static_cast<char*>(malloc(1500));
         strcpy(str_buff,cookie.c_str());
         //    cout<<str_buff<<'\n';
@@ -161,11 +183,41 @@ void sqlite(int id)
         while(tok!=nullptr){
             string number = to_string(i);
             string str(tok);
+
+            string err;
             cookie_name = str.substr(0,str.find_first_of("="));
             cookie_value = str.substr(str.find_first_of("=")+1);
 
-            str_sql="INSERT OR REPLACE INTO moz_cookies(id,baseDomain,name,value,host,path,expiry,lastAcceesseed,creationTime,isSecure,isHttpOnly)"\
-                    "VALUES("+number+",'"+base_Domain+"','"+cookie_name+"','"+cookie_value+"','"+host+"','/',"+expiry+","+lastAccessed+","+creationTime+",0,0);";
+            while(true){
+                err = cookie_value.substr(0,1);
+                if(err ==" ") cookie_value=cookie_value.substr(1);  //맨 앞의 공백 제거.
+                else{
+                    err = cookie_value.substr(cookie_value.length()-1);     //맨뒤로 이동
+                    if(err == " ")
+                        cookie_value=cookie_value.substr(0,cookie_value.length()-1);
+                    else if(err == "0d0a")
+                        cookie_value=cookie_value.substr(0,cookie_value.length()-1);
+                    else
+                        break;
+                }
+            }
+            while(true){
+                err = cookie_name.substr(0,1);
+                if(err ==" ") cookie_name=cookie_name.substr(1);  //맨 앞의 공백 제거.
+                else{
+                    err = cookie_name.substr(cookie_name.length()-1);     //맨뒤로 이동
+                    if(err == " ")
+                        cookie_name=cookie_name.substr(0,cookie_name.length()-1);
+                    else
+                        break;
+                }
+            }
+
+//            err = cookie_name.substr(0,1);
+//            if(err ==" ") cookie_name=cookie_name.substr(1);
+
+            str_sql="INSERT OR REPLACE INTO moz_cookies(id,baseDomain,name,value,host,path,expiry)"\
+                    "VALUES("+number+",'"+base_Domain+"','"+cookie_name+"','"+cookie_value+"','."+base_Domain+"','/',"+expiry+");";
             tok=strtok(nullptr,";");
             i++;
 
@@ -184,7 +236,7 @@ void MainWindow::on_treeWidget_doubleClicked(const QModelIndex &index)
     auto it =qm.find(key);
     if(it != qm.end())
     {
-        QMessageBox::information(this,"TEST",it.value().host);
+        QMessageBox::information(this,"접속!",it.value().host,"YES");
         sqlite(key);
     }
 //    QMessageBox::information(this,"TEST",QString::number(key));
@@ -193,14 +245,14 @@ void MainWindow::on_treeWidget_doubleClicked(const QModelIndex &index)
     system(front_str.append(link.toStdString()).c_str());
 }
 
-void MainWindow::on_pushButton_clicked(bool checked)
-{
-    qm.clear();
-    ui->treeWidget->clear();
-}
-
 void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     auto it = qm.find(column);
     QMessageBox::information(this,"TEST",it.value().cookie);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    qm.clear();
+    ui->treeWidget->clear();
 }

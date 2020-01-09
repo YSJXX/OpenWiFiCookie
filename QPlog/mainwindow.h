@@ -31,7 +31,7 @@ private slots:
     void on_Start_clicked();
     void on_Stop_clicked();
     void on_treeWidget_doubleClicked(const QModelIndex &index);
-    void on_pushButton_clicked(bool checked);
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void on_pushButton_clicked();
 };
 #endif // MAINWINDOW_H
