@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <string>
-
+#include <QString>
 
 #ifndef HEADER_H
 #define HEADER_H
@@ -62,12 +62,12 @@ struct map_value
 {
     std::string host;
     std::string cookie;
-};
-
-struct data
-{
-    std::string host;
-    std::string cookie;
     std::string base_domain;
 };
 
+struct qmap
+{
+   QString host;
+   QString cookie;
+   QString base_domain;
+};

@@ -24,13 +24,14 @@ private:
     Ui::MainWindow *ui;
 
 public slots:
-    void onNumberChanged(int,QString,QString);
+    void onNumberChanged(int,QString,QString,QString);
 
 private slots:
     void on_actionMonitor_Mode_triggered();
     void on_Start_clicked();
-    void on_Clear_clicked();
     void on_Stop_clicked();
+    void on_treeWidget_doubleClicked(const QModelIndex &index);
+    void on_pushButton_clicked(bool checked);
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 };
 #endif // MAINWINDOW_H

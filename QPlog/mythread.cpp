@@ -15,6 +15,7 @@
 #include <set>
 #include "header.h"
 #include "mythread.h"
+#include <QMessageBox>
 
 
 mythread::mythread(QObject *parent) :
@@ -137,6 +138,8 @@ void tcp_reassembly(const u_char *http,struct iphdr * ip_header, struct tcphdr *
             if(iter == m.end()){
                 value->host=host;
                 value->cookie=cookie;
+//                string dase_domain = domain_check(host);
+                value->base_domain=domain_check(host);
                 m[key]=*value;
             }else{
                 iter->second.host.append(host);
@@ -144,18 +147,17 @@ void tcp_reassembly(const u_char *http,struct iphdr * ip_header, struct tcphdr *
             }
             mutx.unlock();
 
-            string dase_domain = domain_check(host);
+//            string dase_domain = domain_check(host);
 
         }
     }
-
 }
 
 void mythread::run()
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
-    //    handle = pcap_open_live("wlan0",BUFSIZ,1,100,errbuf);
+//    handle = pcap_open_live("wlan0",BUFSIZ,1,100,errbuf);
     handle = pcap_open_offline("/root/Desktop/Project/naver_packet.pcap",errbuf);
 
     sld.insert(".kr");
@@ -196,7 +198,8 @@ void mythread::run()
                     numberchanged_i++;
                     QString pass_host = QString::fromStdString(it->second.host);
                     QString pass_cookie = QString::fromStdString(it->second.cookie);
-                    emit NumberChanged(static_cast<int>(m.size()),pass_host,pass_cookie);
+                    QString pass_basedomain = QString::fromStdString(it->second.base_domain);
+                    emit NumberChanged(static_cast<int>(m.size()),pass_host,pass_cookie,pass_basedomain);
                 }
             }
     }

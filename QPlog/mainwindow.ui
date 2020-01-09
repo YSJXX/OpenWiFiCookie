@@ -14,19 +14,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="Clear">
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>70</y>
-      <width>88</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Clear</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="Start">
     <property name="geometry">
      <rect>
@@ -62,9 +49,23 @@
       <height>571</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>751</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="dragDropOverwriteMode">
+     <bool>false</bool>
+    </property>
     <column>
      <property name="text">
       <string>ID</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Base Domain</string>
      </property>
     </column>
     <column>
@@ -77,17 +78,19 @@
       <string>Cookie</string>
      </property>
     </column>
-    <item>
-     <property name="text">
-      <string>TEST 1</string>
-     </property>
-     <property name="text">
-      <string>test.gilgil.net</string>
-     </property>
-     <property name="text">
-      <string>jun=234</string>
-     </property>
-    </item>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>70</y>
+      <width>88</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

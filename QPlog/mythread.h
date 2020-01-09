@@ -19,7 +19,7 @@ public:
 
 
 signals:
-    void NumberChanged(int,QString,QString);
+    void NumberChanged(int,QString,QString,QString);
 
 public slots:
 };
