@@ -21,3 +21,4 @@
 
 - HTTP 통신을 하는 경우 아이디,비밀번호,세션 등 정보를 평문으로 통신하게 됩니다. 
 
+<iframe width="640" height="360" src="https://www.youtube.com/embed/6Az2cNU7gUw" frameborder="0" gesture="media" allowfullscreen=""></iframe>
