@@ -21,4 +21,8 @@
 
 - HTTP 통신을 하는 경우 아이디,비밀번호,세션 등 정보를 평문으로 통신하게 됩니다. 
 
-<video src="https://www.youtube.com/watch?v=J4ziOayNWu8" width=180/>
+
+### 데모 영상(이미지 클릭)
+<a href="https://youtu.be/oUcoNEPx3X8" target="_blank">
+ <img src="https://img.youtube.com/vi/oUcoNEPx3X8/sddefault.jpg" alt="Watch the video" width="740" height="540" border="10" />
+</a>
