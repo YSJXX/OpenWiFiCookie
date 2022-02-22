@@ -32,7 +32,7 @@
 ## 프로젝트 진행을 위해 추가로 공부한 내용
 - 쿠키와 세션은 무엇인가?
 - Web Browser의 쿠키 저장 방식
-- Station과 AP의 통신 과정
+- Station과 AP의 통신 및 암호화 
 - AP정보 수집 방법
 - Second Level Domain
 - QT C++을 사용한 GUI 개발 방법
