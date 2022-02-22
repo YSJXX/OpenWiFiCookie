@@ -16,7 +16,6 @@ using namespace std;
 
 static pcap_t *handle;
 static map<string,struct map_value>m;
-//static map<string,string>m;
 
 static int i=0;
 
@@ -77,14 +76,9 @@ void save(string key,string cookie,string host)
     if(iter == m.end()){
         value->host=host;
         value->cookie=cookie;
-        //m.insert(make_pair(key,value));
         m[key]=*value;
-//        m[key]=value->host=host;
-//        m[key]=value->cookie=cookie;
 
     }
-//    cout<<value->host<<'\n';
-//    cout<<value->cookie<<'\n';
 
     cout<<"지나간 패킷 수 : "<<++i<<'\n';
     cout<<"노트 갯수 : "<<m.size()<<'\n';
@@ -92,7 +86,6 @@ void save(string key,string cookie,string host)
         cout<<it->first<<'\n';
         cout<<it->second.host<<'\n';
         cout<<it->second.cookie<<'\n';
-        //cout<<it->second->cookie<<'\n';
         cout<<"-------------------\n";
     }
     sleep(1);
@@ -104,7 +97,6 @@ void data_process(const u_char *http,struct iphdr * ip_header, struct tcphdr * t
     for(int i=0;i<http_len;i++)
         http_data+=static_cast<char>(http[i]);
 
-    //cout<<http_data<<'\n';
     //String 으로 cookie 찾기
     string::size_type cookie_it,host_it;
     string key;
@@ -162,16 +154,3 @@ void * plog(void * arg)
             }
     }
 }
-
-//int main()
-//{
-//    cout<<"Cookies Search..."<<'\n';
-//    pthread_t plog_thread;
-//    pthread_create(&plog_thread,nullptr,plog,nullptr);
-//    int a;
-//    scanf("%d",&a);
-//    if(a==1){
-//        return 0;
-//    }
-
-//}
