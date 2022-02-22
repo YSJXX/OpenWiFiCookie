@@ -26,7 +26,6 @@ string data(string http,string::size_type it)
     if (it != string::npos){
         string str2 = http.substr(it);      //cookie or host string extraction
         result=http.substr(it,str2.find("\n"));      //cookie or host ~ \n
-        //        cout<<"result: "<<result<<'\n';
         return result;
     }
     return "0";
@@ -46,24 +45,6 @@ string make_key(struct iphdr * ip_header,struct tcphdr * tcp_header)
     key.append("|");
     key.append(to_string(ntohs(tcp_header->dest)));
 
-    //    char *key=static_cast<char*>(malloc(60));
-    //    char src_buf[16];
-    //    char dest_buf[16];
-    //    inet_ntop(AF_INET,&ip_header->saddr,src_buf,sizeof(src_buf));
-    //    inet_ntop(AF_INET,&ip_header->daddr,dest_buf,sizeof(dest_buf));
-
-    //    strcat(key,src_buf);
-    //    strcat(key,dest_buf);
-
-    //    char srcport[4];
-    //    sprintf(srcport,"%d",ntohs(tcp_header->source));
-    //    strcat(key,srcport);
-
-    //    char dest[4];
-    //    sprintf(dest,"%d",ntohs(tcp_header->dest));
-    //    strcat(key,dest);
-
-    //cout<<"key: "<<key<<'\n';
     return key;
 }
 void save(string key,string cookie,string host)
