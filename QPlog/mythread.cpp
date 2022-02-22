@@ -27,7 +27,6 @@ using namespace std;
 
 
 static map<string,struct map_value>m;
-//static map<string,string>reassem_map;
 static map<string,struct map_value>reassem_map;
 static set<string>sld;
 static mutex mutx;
