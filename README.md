@@ -37,3 +37,4 @@
 - Second Level Domain
 - QT C++을 사용한 GUI 개발 방법
 - Monitor Mode
+- Thread/Mutex
